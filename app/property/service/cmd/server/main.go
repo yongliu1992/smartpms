@@ -34,3 +34,9 @@ func (p *Property) ListUnits(ctx context.Context, req repo.ListUnitsReq, resp *a
 	resp.Message = "ok"
 	return nil
 }
+func (p *Property)ListShops(ctx context.Context,req repo.ListUnitsReq,resp *api.Resp)error  {
+	resp.Data = repo.ListShopsResp{}.Data
+	resp.Code = 200
+	resp.Message = "ok"
+	return nil
+}

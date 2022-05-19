@@ -1,0 +1,6 @@
+property:
+ mysql:
+   user: root
+   password: 123456
+   host: sonar.cn
+   port: 3306

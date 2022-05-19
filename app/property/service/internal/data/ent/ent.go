@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/community"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/shop"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -30,6 +31,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		community.Table: community.ValidColumn,
+		shop.Table:      shop.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

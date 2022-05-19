@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/smallnest/rpcx/server"
 	"github.com/yongliu1992/smartpms/api"
-	"github.com/yongliu1992/smartpms/app/property/service/internal/repo"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
+	"net/url"
 	"time"
 )
 import "github.com/smallnest/rpcx/serverplugin"
@@ -20,23 +22,36 @@ func main() {
 	r.Start()
 	s.Plugins.Add(r)
 	s.RegisterName("property", new(Property), "")
-	err := s.Serve("tcp", "127.0.0.1:8088")
-	if err !=nil {
-		panic(err )
+	app, cleanup, err := initApp()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(app)
+	defer cleanup()
+	err = s.Serve("tcp", "127.0.0.1:8088")
+	if err != nil {
+		panic(err)
 	}
 }
 
 type Property struct{}
 
-func (p *Property) ListUnits(ctx context.Context, req repo.ListUnitsReq, resp *api.Resp) error {
-	resp.Data = repo.ListUnitsResp{}.Data
+func (p *Property) ListUnits(ctx context.Context, req biz.ListUnitsReq, resp *api.Resp) error {
+	resp.Data = biz.ListUnitsResp{}.Data
 	resp.Code = 200
 	resp.Message = "ok"
 	return nil
 }
-func (p *Property)ListShops(ctx context.Context,req repo.ListUnitsReq,resp *api.Resp)error  {
-	resp.Data = repo.ListShopsResp{}.Data
+func (p *Property) ListShops(ctx context.Context, req Param, resp *api.Resp) error {
+	fmt.Println("ccc", req.Url.Get("a"))
+	resp.Data = "cccsadas"
 	resp.Code = 200
 	resp.Message = "ok"
 	return nil
+}
+
+type Param struct {
+	Url  url.Values
+	Post *url.Values
 }

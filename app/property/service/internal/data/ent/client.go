@@ -10,6 +10,7 @@ import (
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/migrate"
 
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/community"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/shop"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -22,6 +23,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Community is the client for interacting with the Community builders.
 	Community *CommunityClient
+	// Shop is the client for interacting with the Shop builders.
+	Shop *ShopClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -36,6 +39,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Community = NewCommunityClient(c.config)
+	c.Shop = NewShopClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -70,6 +74,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:       ctx,
 		config:    cfg,
 		Community: NewCommunityClient(cfg),
+		Shop:      NewShopClient(cfg),
 	}, nil
 }
 
@@ -90,6 +95,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:       ctx,
 		config:    cfg,
 		Community: NewCommunityClient(cfg),
+		Shop:      NewShopClient(cfg),
 	}, nil
 }
 
@@ -120,6 +126,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Community.Use(hooks...)
+	c.Shop.Use(hooks...)
 }
 
 // CommunityClient is a client for the Community schema.
@@ -210,4 +217,94 @@ func (c *CommunityClient) GetX(ctx context.Context, id int) *Community {
 // Hooks returns the client hooks.
 func (c *CommunityClient) Hooks() []Hook {
 	return c.hooks.Community
+}
+
+// ShopClient is a client for the Shop schema.
+type ShopClient struct {
+	config
+}
+
+// NewShopClient returns a client for the Shop from the given config.
+func NewShopClient(c config) *ShopClient {
+	return &ShopClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `shop.Hooks(f(g(h())))`.
+func (c *ShopClient) Use(hooks ...Hook) {
+	c.hooks.Shop = append(c.hooks.Shop, hooks...)
+}
+
+// Create returns a create builder for Shop.
+func (c *ShopClient) Create() *ShopCreate {
+	mutation := newShopMutation(c.config, OpCreate)
+	return &ShopCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Shop entities.
+func (c *ShopClient) CreateBulk(builders ...*ShopCreate) *ShopCreateBulk {
+	return &ShopCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Shop.
+func (c *ShopClient) Update() *ShopUpdate {
+	mutation := newShopMutation(c.config, OpUpdate)
+	return &ShopUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ShopClient) UpdateOne(s *Shop) *ShopUpdateOne {
+	mutation := newShopMutation(c.config, OpUpdateOne, withShop(s))
+	return &ShopUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ShopClient) UpdateOneID(id int) *ShopUpdateOne {
+	mutation := newShopMutation(c.config, OpUpdateOne, withShopID(id))
+	return &ShopUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Shop.
+func (c *ShopClient) Delete() *ShopDelete {
+	mutation := newShopMutation(c.config, OpDelete)
+	return &ShopDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ShopClient) DeleteOne(s *Shop) *ShopDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ShopClient) DeleteOneID(id int) *ShopDeleteOne {
+	builder := c.Delete().Where(shop.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ShopDeleteOne{builder}
+}
+
+// Query returns a query builder for Shop.
+func (c *ShopClient) Query() *ShopQuery {
+	return &ShopQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Shop entity by its id.
+func (c *ShopClient) Get(ctx context.Context, id int) (*Shop, error) {
+	return c.Query().Where(shop.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ShopClient) GetX(ctx context.Context, id int) *Shop {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ShopClient) Hooks() []Hook {
+	return c.hooks.Shop
 }

@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Community is the client for interacting with the Community builders.
 	Community *CommunityClient
+	// Shop is the client for interacting with the Shop builders.
+	Shop *ShopClient
 
 	// lazily loaded.
 	client     *Client
@@ -150,6 +152,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Community = NewCommunityClient(tx.config)
+	tx.Shop = NewShopClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -8,3 +8,6 @@ import (
 
 // Community is the predicate function for community builders.
 type Community func(*sql.Selector)
+
+// Shop is the predicate function for shop builders.
+type Shop func(*sql.Selector)

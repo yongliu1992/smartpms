@@ -1,4 +1,4 @@
-package repo
+package biz
 
 type ListUnitsReq struct {
 	CommunityId int

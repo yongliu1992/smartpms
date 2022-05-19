@@ -11,6 +11,7 @@ import (
 
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/community"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/predicate"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/shop"
 
 	"entgo.io/ent"
 )
@@ -25,6 +26,7 @@ const (
 
 	// Node types.
 	TypeCommunity = "Community"
+	TypeShop      = "Shop"
 )
 
 // CommunityMutation represents an operation that mutates the Community nodes in the graph.
@@ -1224,4 +1226,1149 @@ func (m *CommunityMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CommunityMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Community edge %s", name)
+}
+
+// ShopMutation represents an operation that mutates the Shop nodes in the graph.
+type ShopMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *int
+	floor_id         *string
+	room_num         *int
+	addroom_num      *int
+	layer            *int
+	addlayer         *int
+	built_up_area    *float32
+	addbuilt_up_area *float32
+	community_id     *int
+	addcommunity_id  *int
+	fee_rate         *float32
+	addfee_rate      *float32
+	room_area        *float32
+	addroom_area     *float32
+	rent             *float32
+	addrent          *float32
+	remark           *string
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*Shop, error)
+	predicates       []predicate.Shop
+}
+
+var _ ent.Mutation = (*ShopMutation)(nil)
+
+// shopOption allows management of the mutation configuration using functional options.
+type shopOption func(*ShopMutation)
+
+// newShopMutation creates new mutation for the Shop entity.
+func newShopMutation(c config, op Op, opts ...shopOption) *ShopMutation {
+	m := &ShopMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeShop,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withShopID sets the ID field of the mutation.
+func withShopID(id int) shopOption {
+	return func(m *ShopMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Shop
+		)
+		m.oldValue = func(ctx context.Context) (*Shop, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Shop.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withShop sets the old Shop of the mutation.
+func withShop(node *Shop) shopOption {
+	return func(m *ShopMutation) {
+		m.oldValue = func(context.Context) (*Shop, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ShopMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ShopMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Shop entities.
+func (m *ShopMutation) SetID(id int) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ShopMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ShopMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Shop.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetFloorID sets the "floor_id" field.
+func (m *ShopMutation) SetFloorID(s string) {
+	m.floor_id = &s
+}
+
+// FloorID returns the value of the "floor_id" field in the mutation.
+func (m *ShopMutation) FloorID() (r string, exists bool) {
+	v := m.floor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFloorID returns the old "floor_id" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldFloorID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFloorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFloorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFloorID: %w", err)
+	}
+	return oldValue.FloorID, nil
+}
+
+// ResetFloorID resets all changes to the "floor_id" field.
+func (m *ShopMutation) ResetFloorID() {
+	m.floor_id = nil
+}
+
+// SetRoomNum sets the "room_num" field.
+func (m *ShopMutation) SetRoomNum(i int) {
+	m.room_num = &i
+	m.addroom_num = nil
+}
+
+// RoomNum returns the value of the "room_num" field in the mutation.
+func (m *ShopMutation) RoomNum() (r int, exists bool) {
+	v := m.room_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoomNum returns the old "room_num" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldRoomNum(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoomNum is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoomNum requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoomNum: %w", err)
+	}
+	return oldValue.RoomNum, nil
+}
+
+// AddRoomNum adds i to the "room_num" field.
+func (m *ShopMutation) AddRoomNum(i int) {
+	if m.addroom_num != nil {
+		*m.addroom_num += i
+	} else {
+		m.addroom_num = &i
+	}
+}
+
+// AddedRoomNum returns the value that was added to the "room_num" field in this mutation.
+func (m *ShopMutation) AddedRoomNum() (r int, exists bool) {
+	v := m.addroom_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRoomNum resets all changes to the "room_num" field.
+func (m *ShopMutation) ResetRoomNum() {
+	m.room_num = nil
+	m.addroom_num = nil
+}
+
+// SetLayer sets the "layer" field.
+func (m *ShopMutation) SetLayer(i int) {
+	m.layer = &i
+	m.addlayer = nil
+}
+
+// Layer returns the value of the "layer" field in the mutation.
+func (m *ShopMutation) Layer() (r int, exists bool) {
+	v := m.layer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLayer returns the old "layer" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldLayer(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLayer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLayer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLayer: %w", err)
+	}
+	return oldValue.Layer, nil
+}
+
+// AddLayer adds i to the "layer" field.
+func (m *ShopMutation) AddLayer(i int) {
+	if m.addlayer != nil {
+		*m.addlayer += i
+	} else {
+		m.addlayer = &i
+	}
+}
+
+// AddedLayer returns the value that was added to the "layer" field in this mutation.
+func (m *ShopMutation) AddedLayer() (r int, exists bool) {
+	v := m.addlayer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLayer resets all changes to the "layer" field.
+func (m *ShopMutation) ResetLayer() {
+	m.layer = nil
+	m.addlayer = nil
+}
+
+// SetBuiltUpArea sets the "built_up_area" field.
+func (m *ShopMutation) SetBuiltUpArea(f float32) {
+	m.built_up_area = &f
+	m.addbuilt_up_area = nil
+}
+
+// BuiltUpArea returns the value of the "built_up_area" field in the mutation.
+func (m *ShopMutation) BuiltUpArea() (r float32, exists bool) {
+	v := m.built_up_area
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBuiltUpArea returns the old "built_up_area" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldBuiltUpArea(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBuiltUpArea is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBuiltUpArea requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBuiltUpArea: %w", err)
+	}
+	return oldValue.BuiltUpArea, nil
+}
+
+// AddBuiltUpArea adds f to the "built_up_area" field.
+func (m *ShopMutation) AddBuiltUpArea(f float32) {
+	if m.addbuilt_up_area != nil {
+		*m.addbuilt_up_area += f
+	} else {
+		m.addbuilt_up_area = &f
+	}
+}
+
+// AddedBuiltUpArea returns the value that was added to the "built_up_area" field in this mutation.
+func (m *ShopMutation) AddedBuiltUpArea() (r float32, exists bool) {
+	v := m.addbuilt_up_area
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBuiltUpArea resets all changes to the "built_up_area" field.
+func (m *ShopMutation) ResetBuiltUpArea() {
+	m.built_up_area = nil
+	m.addbuilt_up_area = nil
+}
+
+// SetCommunityID sets the "community_id" field.
+func (m *ShopMutation) SetCommunityID(i int) {
+	m.community_id = &i
+	m.addcommunity_id = nil
+}
+
+// CommunityID returns the value of the "community_id" field in the mutation.
+func (m *ShopMutation) CommunityID() (r int, exists bool) {
+	v := m.community_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCommunityID returns the old "community_id" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldCommunityID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCommunityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCommunityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCommunityID: %w", err)
+	}
+	return oldValue.CommunityID, nil
+}
+
+// AddCommunityID adds i to the "community_id" field.
+func (m *ShopMutation) AddCommunityID(i int) {
+	if m.addcommunity_id != nil {
+		*m.addcommunity_id += i
+	} else {
+		m.addcommunity_id = &i
+	}
+}
+
+// AddedCommunityID returns the value that was added to the "community_id" field in this mutation.
+func (m *ShopMutation) AddedCommunityID() (r int, exists bool) {
+	v := m.addcommunity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCommunityID resets all changes to the "community_id" field.
+func (m *ShopMutation) ResetCommunityID() {
+	m.community_id = nil
+	m.addcommunity_id = nil
+}
+
+// SetFeeRate sets the "fee_rate" field.
+func (m *ShopMutation) SetFeeRate(f float32) {
+	m.fee_rate = &f
+	m.addfee_rate = nil
+}
+
+// FeeRate returns the value of the "fee_rate" field in the mutation.
+func (m *ShopMutation) FeeRate() (r float32, exists bool) {
+	v := m.fee_rate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFeeRate returns the old "fee_rate" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldFeeRate(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFeeRate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFeeRate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFeeRate: %w", err)
+	}
+	return oldValue.FeeRate, nil
+}
+
+// AddFeeRate adds f to the "fee_rate" field.
+func (m *ShopMutation) AddFeeRate(f float32) {
+	if m.addfee_rate != nil {
+		*m.addfee_rate += f
+	} else {
+		m.addfee_rate = &f
+	}
+}
+
+// AddedFeeRate returns the value that was added to the "fee_rate" field in this mutation.
+func (m *ShopMutation) AddedFeeRate() (r float32, exists bool) {
+	v := m.addfee_rate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFeeRate resets all changes to the "fee_rate" field.
+func (m *ShopMutation) ResetFeeRate() {
+	m.fee_rate = nil
+	m.addfee_rate = nil
+}
+
+// SetRoomArea sets the "room_area" field.
+func (m *ShopMutation) SetRoomArea(f float32) {
+	m.room_area = &f
+	m.addroom_area = nil
+}
+
+// RoomArea returns the value of the "room_area" field in the mutation.
+func (m *ShopMutation) RoomArea() (r float32, exists bool) {
+	v := m.room_area
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoomArea returns the old "room_area" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldRoomArea(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoomArea is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoomArea requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoomArea: %w", err)
+	}
+	return oldValue.RoomArea, nil
+}
+
+// AddRoomArea adds f to the "room_area" field.
+func (m *ShopMutation) AddRoomArea(f float32) {
+	if m.addroom_area != nil {
+		*m.addroom_area += f
+	} else {
+		m.addroom_area = &f
+	}
+}
+
+// AddedRoomArea returns the value that was added to the "room_area" field in this mutation.
+func (m *ShopMutation) AddedRoomArea() (r float32, exists bool) {
+	v := m.addroom_area
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRoomArea resets all changes to the "room_area" field.
+func (m *ShopMutation) ResetRoomArea() {
+	m.room_area = nil
+	m.addroom_area = nil
+}
+
+// SetRent sets the "rent" field.
+func (m *ShopMutation) SetRent(f float32) {
+	m.rent = &f
+	m.addrent = nil
+}
+
+// Rent returns the value of the "rent" field in the mutation.
+func (m *ShopMutation) Rent() (r float32, exists bool) {
+	v := m.rent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRent returns the old "rent" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldRent(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRent: %w", err)
+	}
+	return oldValue.Rent, nil
+}
+
+// AddRent adds f to the "rent" field.
+func (m *ShopMutation) AddRent(f float32) {
+	if m.addrent != nil {
+		*m.addrent += f
+	} else {
+		m.addrent = &f
+	}
+}
+
+// AddedRent returns the value that was added to the "rent" field in this mutation.
+func (m *ShopMutation) AddedRent() (r float32, exists bool) {
+	v := m.addrent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRent resets all changes to the "rent" field.
+func (m *ShopMutation) ResetRent() {
+	m.rent = nil
+	m.addrent = nil
+}
+
+// SetRemark sets the "remark" field.
+func (m *ShopMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *ShopMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *ShopMutation) ResetRemark() {
+	m.remark = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ShopMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ShopMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ShopMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ShopMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ShopMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ShopMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *ShopMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *ShopMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Shop entity.
+// If the Shop object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ShopMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *ShopMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+}
+
+// Where appends a list predicates to the ShopMutation builder.
+func (m *ShopMutation) Where(ps ...predicate.Shop) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ShopMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Shop).
+func (m *ShopMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ShopMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.floor_id != nil {
+		fields = append(fields, shop.FieldFloorID)
+	}
+	if m.room_num != nil {
+		fields = append(fields, shop.FieldRoomNum)
+	}
+	if m.layer != nil {
+		fields = append(fields, shop.FieldLayer)
+	}
+	if m.built_up_area != nil {
+		fields = append(fields, shop.FieldBuiltUpArea)
+	}
+	if m.community_id != nil {
+		fields = append(fields, shop.FieldCommunityID)
+	}
+	if m.fee_rate != nil {
+		fields = append(fields, shop.FieldFeeRate)
+	}
+	if m.room_area != nil {
+		fields = append(fields, shop.FieldRoomArea)
+	}
+	if m.rent != nil {
+		fields = append(fields, shop.FieldRent)
+	}
+	if m.remark != nil {
+		fields = append(fields, shop.FieldRemark)
+	}
+	if m.created_at != nil {
+		fields = append(fields, shop.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, shop.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, shop.FieldDeletedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ShopMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case shop.FieldFloorID:
+		return m.FloorID()
+	case shop.FieldRoomNum:
+		return m.RoomNum()
+	case shop.FieldLayer:
+		return m.Layer()
+	case shop.FieldBuiltUpArea:
+		return m.BuiltUpArea()
+	case shop.FieldCommunityID:
+		return m.CommunityID()
+	case shop.FieldFeeRate:
+		return m.FeeRate()
+	case shop.FieldRoomArea:
+		return m.RoomArea()
+	case shop.FieldRent:
+		return m.Rent()
+	case shop.FieldRemark:
+		return m.Remark()
+	case shop.FieldCreatedAt:
+		return m.CreatedAt()
+	case shop.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case shop.FieldDeletedAt:
+		return m.DeletedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ShopMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case shop.FieldFloorID:
+		return m.OldFloorID(ctx)
+	case shop.FieldRoomNum:
+		return m.OldRoomNum(ctx)
+	case shop.FieldLayer:
+		return m.OldLayer(ctx)
+	case shop.FieldBuiltUpArea:
+		return m.OldBuiltUpArea(ctx)
+	case shop.FieldCommunityID:
+		return m.OldCommunityID(ctx)
+	case shop.FieldFeeRate:
+		return m.OldFeeRate(ctx)
+	case shop.FieldRoomArea:
+		return m.OldRoomArea(ctx)
+	case shop.FieldRent:
+		return m.OldRent(ctx)
+	case shop.FieldRemark:
+		return m.OldRemark(ctx)
+	case shop.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case shop.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case shop.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Shop field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ShopMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case shop.FieldFloorID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFloorID(v)
+		return nil
+	case shop.FieldRoomNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoomNum(v)
+		return nil
+	case shop.FieldLayer:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLayer(v)
+		return nil
+	case shop.FieldBuiltUpArea:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBuiltUpArea(v)
+		return nil
+	case shop.FieldCommunityID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCommunityID(v)
+		return nil
+	case shop.FieldFeeRate:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFeeRate(v)
+		return nil
+	case shop.FieldRoomArea:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoomArea(v)
+		return nil
+	case shop.FieldRent:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRent(v)
+		return nil
+	case shop.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case shop.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case shop.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case shop.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Shop field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ShopMutation) AddedFields() []string {
+	var fields []string
+	if m.addroom_num != nil {
+		fields = append(fields, shop.FieldRoomNum)
+	}
+	if m.addlayer != nil {
+		fields = append(fields, shop.FieldLayer)
+	}
+	if m.addbuilt_up_area != nil {
+		fields = append(fields, shop.FieldBuiltUpArea)
+	}
+	if m.addcommunity_id != nil {
+		fields = append(fields, shop.FieldCommunityID)
+	}
+	if m.addfee_rate != nil {
+		fields = append(fields, shop.FieldFeeRate)
+	}
+	if m.addroom_area != nil {
+		fields = append(fields, shop.FieldRoomArea)
+	}
+	if m.addrent != nil {
+		fields = append(fields, shop.FieldRent)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ShopMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case shop.FieldRoomNum:
+		return m.AddedRoomNum()
+	case shop.FieldLayer:
+		return m.AddedLayer()
+	case shop.FieldBuiltUpArea:
+		return m.AddedBuiltUpArea()
+	case shop.FieldCommunityID:
+		return m.AddedCommunityID()
+	case shop.FieldFeeRate:
+		return m.AddedFeeRate()
+	case shop.FieldRoomArea:
+		return m.AddedRoomArea()
+	case shop.FieldRent:
+		return m.AddedRent()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ShopMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case shop.FieldRoomNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRoomNum(v)
+		return nil
+	case shop.FieldLayer:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLayer(v)
+		return nil
+	case shop.FieldBuiltUpArea:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBuiltUpArea(v)
+		return nil
+	case shop.FieldCommunityID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCommunityID(v)
+		return nil
+	case shop.FieldFeeRate:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFeeRate(v)
+		return nil
+	case shop.FieldRoomArea:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRoomArea(v)
+		return nil
+	case shop.FieldRent:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRent(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Shop numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ShopMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ShopMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ShopMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Shop nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ShopMutation) ResetField(name string) error {
+	switch name {
+	case shop.FieldFloorID:
+		m.ResetFloorID()
+		return nil
+	case shop.FieldRoomNum:
+		m.ResetRoomNum()
+		return nil
+	case shop.FieldLayer:
+		m.ResetLayer()
+		return nil
+	case shop.FieldBuiltUpArea:
+		m.ResetBuiltUpArea()
+		return nil
+	case shop.FieldCommunityID:
+		m.ResetCommunityID()
+		return nil
+	case shop.FieldFeeRate:
+		m.ResetFeeRate()
+		return nil
+	case shop.FieldRoomArea:
+		m.ResetRoomArea()
+		return nil
+	case shop.FieldRent:
+		m.ResetRent()
+		return nil
+	case shop.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case shop.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case shop.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case shop.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Shop field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ShopMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ShopMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ShopMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ShopMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ShopMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ShopMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ShopMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Shop unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ShopMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Shop edge %s", name)
 }

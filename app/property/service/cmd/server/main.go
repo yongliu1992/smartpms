@@ -22,14 +22,7 @@ func main() {
 	r.Start()
 	s.Plugins.Add(r)
 	s.RegisterName("property", new(Property), "")
-	app, cleanup, err := initApp()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(app)
-	defer cleanup()
-	err = s.Serve("tcp", "127.0.0.1:8088")
+	err := s.Serve("tcp", "127.0.0.1:8088")
 	if err != nil {
 		panic(err)
 	}

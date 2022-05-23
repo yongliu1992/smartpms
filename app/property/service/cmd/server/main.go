@@ -6,6 +6,7 @@ import (
 	"github.com/smallnest/rpcx/server"
 	"github.com/yongliu1992/smartpms/api"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/data"
 	"net/url"
 	"time"
 )
@@ -22,6 +23,7 @@ func main() {
 	r.Start()
 	s.Plugins.Add(r)
 	s.RegisterName("property", new(Property), "")
+	data.InitData()
 	err := s.Serve("tcp", "127.0.0.1:8088")
 	if err != nil {
 		panic(err)

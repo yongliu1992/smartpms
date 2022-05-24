@@ -6,32 +6,43 @@ import (
 )
 
 type CommunityRepo interface {
-	Add(ctx context.Context, co Community) error
+	Add(ctx context.Context, co Community) (Community,error)
 }
 
 type Community struct {
 	ID int `db:"id"`
 	// Comment: 小区名字
-	Name *string `db:"name"`
+	Name string `db:"name"`
 	// Comment: 省份id
-	ProvinceID *int `db:"province_id"`
+	ProvinceID int `db:"province_id"`
 	// Comment: 市/州id
-	CityID *int `db:"city_id"`
+	CityID int `db:"city_id"`
 	// Comment: 区/县id
-	AreaID *int `db:"area_id"`
+	AreaID int `db:"area_id"`
 	// Comment: 面积
-	AreaNum *int `db:"area_num"`
+	AreaNum int `db:"area_num"`
 	// Comment: 管理员id
-	AdminID *int `db:"admin_id"`
+	AdminID int `db:"admin_id"`
 	// Comment: 小区编码
-	Number *int `db:"number"`
+	Number int `db:"number"`
 	// Comment: 状态，1入驻审核2入驻成功3取消入驻
-	State *int `db:"state"`
+	State int `db:"state"`
 	// Comment: 开始时间
-	StartTime *time.Time `db:"start_time"`
+	StartTime time.Time `db:"start_time"`
 	// Comment: 结束时间
-	EndTime   *time.Time `db:"end_time"`
-	CreatedAt *time.Time `db:"created_at"`
-	UpdatedAt *time.Time `db:"updated_at"`
-	DeletedAt *time.Time `db:"deleted_at"`
+	EndTime   time.Time `db:"end_time"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
+	DeletedAt time.Time `db:"deleted_at"`
+}
+type CommunityUseCase struct {
+	repo CommunityRepo
+}
+
+func (c *CommunityUseCase) Add(ctx context.Context, co Community) (Community, error) {
+	return c.repo.Add(ctx,co)
+}
+
+func NewCommunityUseCase(repo CommunityRepo)*CommunityUseCase  {
+	return &CommunityUseCase{repo: repo}
 }

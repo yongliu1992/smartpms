@@ -14,7 +14,11 @@ import (
 
 func InitData() (*Data, func(), error) {
 	client := NewEntClient()
-	data := ProvideData(client)
+	redisClient, err := NewRedisClient()
+	if err != nil {
+		return nil, nil, err
+	}
+	data := ProvideData(client, redisClient)
 	return data, func() {
 	}, nil
 }

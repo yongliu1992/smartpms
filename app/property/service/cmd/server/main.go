@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/smallnest/rpcx/server"
 	"github.com/yongliu1992/smartpms/api"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
@@ -12,7 +11,9 @@ import (
 	"time"
 )
 import "github.com/smallnest/rpcx/serverplugin"
-var db *data.Data
+
+var repo *data.Data
+
 func main() {
 	s := server.NewServer()
 	r := &serverplugin.ZooKeeperRegisterPlugin{
@@ -24,10 +25,10 @@ func main() {
 	r.Start()
 	s.Plugins.Add(r)
 	s.RegisterName("property", new(Property), "")
-	dt,_,err := data.InitData()
-	db = dt
-	if err !=nil {
-		panic(err )
+	rp, _, err := data.InitData()
+	repo = rp
+	if err != nil {
+		panic(err)
 	}
 	//defer clean()
 	err = s.Serve("tcp", "127.0.0.1:8088")
@@ -45,9 +46,30 @@ func (p *Property) ListUnits(ctx context.Context, req biz.ListUnitsReq, resp *ap
 	return nil
 }
 func (p *Property) Shops(ctx context.Context, req Param, resp *api.Resp) error {
-	pageSize ,_ :=strconv.Atoi(req.Url.Get("pageSize"))
-	data,err := data.NewShopRepo(db).ListShop(ctx,0,pageSize,1)
-	fmt.Println(err)
+	pageSize, _ := strconv.Atoi(req.Url.Get("pageSize"))
+	data, err := biz.NewShopUseCase(data.NewShopRepo(repo)).ListShop(ctx, 0, pageSize, 1)
+	if err != nil {
+		resp.Code = 500
+		resp.Message = err.Error()
+		resp.Data = nil
+		return nil
+	}
+	resp.Data = data
+	resp.Code = 200
+	resp.Message = "ok"
+	return nil
+}
+func (p *Property) CreateCommunity(ctx context.Context, req Param, resp *api.Resp) error {
+
+	var reqData biz.Community
+	reqData.Name = req.Post.Get("name")
+	data, err := biz.NewCommunityUseCase(data.NewCommunityRepo(repo)).Add(ctx, reqData)
+	if err != nil {
+		resp.Code = 500
+		resp.Message = err.Error()
+		resp.Data = nil
+		return nil
+	}
 	resp.Data = data
 	resp.Code = 200
 	resp.Message = "ok"

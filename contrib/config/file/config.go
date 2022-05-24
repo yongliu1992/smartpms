@@ -33,9 +33,17 @@ type ConfigMysql struct {
 	Port     string `yaml:"port"`
 	DbName   string `yaml:"db_name"`
 }
+
+type ConfigRedis struct {
+	Password string `yaml:"password"`
+	Address  string `yaml:"address"` //host:port
+	Db       int    `yaml:"db"`
+}
+
 type Configs struct {
 	Property Property `yaml:"property"`
 }
 type Property struct {
 	Mysql ConfigMysql `yaml:"mysql"`
+	Redis ConfigRedis `yaml:"redis"`
 }

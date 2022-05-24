@@ -1,6 +1,12 @@
 package data
 
-import "time"
+import (
+	"context"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
+	"time"
+)
+
+var _ biz.CommunityRepo = (*communityRepo)(nil)
 
 //Community 小区
 type Community struct {
@@ -31,4 +37,26 @@ type Community struct {
 }
 
 type communityRepo struct {
+	data *Data
+}
+
+func (c communityRepo) Add(ctx context.Context, co biz.Community) (biz.Community, error) {
+	result, err := c.data.db.Community.
+		Create().
+		SetName(co.Name).
+		SetAdminID(co.AdminID).
+		SetCommNumber(co.Number).
+		SetAreaID(co.AreaID).
+		SetAreaNum(co.AreaNum).
+		SetCityID(co.CityID).
+		SetEndTime(co.EndTime).
+		SetStartTime(co.StartTime).
+		SetProvinceID(co.ProvinceID).
+		SetState(co.State).
+		Save(ctx)
+	return biz.Community{ID: result.ID}, err
+}
+
+func NewCommunityRepo(data *Data)*communityRepo  {
+	return &communityRepo{data: data}
 }

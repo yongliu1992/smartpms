@@ -5,3 +5,7 @@ property:
    host: 127.0.0.1
    port: 3306
    db_name: smart_pms
+ redis:
+   address: 127.0.0.1:6379
+   password:
+   db: 1

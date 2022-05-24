@@ -3657,6 +3657,22 @@ INSERT INTO `country_area` VALUES (820101, 820100, '澳门半岛');
 INSERT INTO `country_area` VALUES (820102, 820100, '凼仔');
 INSERT INTO `country_area` VALUES (820103, 820100, '路凼城');
 INSERT INTO `country_area` VALUES (820104, 820100, '路环');
+CREATE TABLE `shops` (
+                         `id` int(11) NOT NULL,
+                         `floor_id` int(11) NOT NULL,
+                         `room_num` int(11) NOT NULL,
+                         `layer` int(255) NOT NULL,
+                         `built_up_area` float(255,0) NOT NULL,
+  `community_id` int(11) NOT NULL,
+  `fee_rate` float(255,0) NOT NULL,
+  `room_area` float(255,0) NOT NULL,
+  `rent` float(255,0) NOT NULL,
+  `remark` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `deleted_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

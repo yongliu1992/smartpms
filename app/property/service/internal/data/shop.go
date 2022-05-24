@@ -1,6 +1,9 @@
 package data
 
-import "github.com/yongliu1992/smartpms/app/property/service/internal/biz"
+import (
+	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/shop"
+)
 import "context"
 
 var _ biz.ShopsRepo = (*shopRepo)(nil)
@@ -33,9 +36,17 @@ func (sp *shopRepo) UpdateShop(ctx context.Context, s *biz.Shop) (*biz.Shop, err
 	panic("implement me")
 }
 
-func (sp *shopRepo) ListShop(ctx context.Context, pageNum, pageSize, villageId int) (*biz.Shop, error) {
-	//TODO implement me
-	panic("implement me")
+func (sp *shopRepo) ListShop(ctx context.Context, pageNum, pageSize, villageId int) (resp []*biz.Shop, err error) {
+	if pageNum <= 0 {
+		pageNum = 1
+	}
+	data, err := sp.data.db.Debug().Shop.Query().Where(shop.And(shop.CommunityID(villageId))).Offset((pageNum - 1) * pageSize).Limit(pageNum).All(ctx)
+	for _, v := range data {
+		bp := biz.Shop{ID: v.ID, FloorID: v.FloorID,CreatedAt: v.CreatedAt,BuiltUpArea: v.BuiltUpArea}
+		resp = append(resp, &bp)
+	}
+	return resp, err
+
 }
 
 func NewShopRepo(data *Data) *shopRepo {

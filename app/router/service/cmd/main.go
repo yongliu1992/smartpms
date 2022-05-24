@@ -54,7 +54,8 @@ func main() {
 			Url  url.Values
 			Post *url.Values
 		}
-		err := InvokeService(c, c.Param("srvName"), c.Param("method"), Param{Url: c.Request.URL.Query(), Post: &c.Request.PostForm}, &resp)
+		method := strings.ToUpper(c.Param("method")[:1])+c.Param("method")[1:]
+		err := InvokeService(c, c.Param("srvName"), method, Param{Url: c.Request.URL.Query(), Post: &c.Request.PostForm}, &resp)
 		if err != nil && strings.Contains(err.Error(), "can not found any server") {
 			//_, err := refreshRpcXClient(c.Param("srvName"))
 			fmt.Println("ccc refresh error", err)

@@ -48,14 +48,14 @@ type Shop struct {
 type ShopsRepo interface {
 	CreateShop(ctx context.Context, s *Shop) (*Shop, error)
 	UpdateShop(ctx context.Context, s *Shop) (*Shop, error)
-	ListShop(ctx context.Context, pageNum, pageSize, villageId int) (*Shop, error)
+	ListShop(ctx context.Context, pageNum, pageSize, villageId int) ([]*Shop, error)
 }
 
 type ShopUseCase struct {
 	repo ShopsRepo
 }
 
-func (uc *ShopUseCase) ListShop(ctx context.Context, pageNum, pageSize, villageId int) (*Shop, error) {
+func (uc *ShopUseCase) ListShop(ctx context.Context, pageNum, pageSize, villageId int) ([]*Shop, error) {
 	return uc.repo.ListShop(ctx, pageNum, pageSize, villageId)
 }
 

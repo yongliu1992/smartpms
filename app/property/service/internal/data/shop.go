@@ -36,17 +36,25 @@ func (sp *shopRepo) UpdateShop(ctx context.Context, s *biz.Shop) (*biz.Shop, err
 	panic("implement me")
 }
 
-func (sp *shopRepo) ListShop(ctx context.Context, pageNum, pageSize, villageId int) (resp []*biz.Shop, err error) {
+func (sp *shopRepo) ListShop(ctx context.Context, pageNum, pageSize, villageId int) (resp *biz.ListShopsResp, err error) {
 	if pageNum <= 0 {
 		pageNum = 1
 	}
 	data, err := sp.data.db.Debug().Shop.Query().Where(shop.And(shop.CommunityID(villageId))).Offset((pageNum - 1) * pageSize).Limit(pageNum).All(ctx)
-	for _, v := range data {
+	if err !=nil {
+		return nil,err
+	}
+	resp = &biz.ListShopsResp{}
+	resp.List = make([]biz.Shop,len(data))
+	for k, v := range data {
 		bp := biz.Shop{ID: v.ID, FloorID: v.FloorID,CreatedAt: v.CreatedAt,BuiltUpArea: v.BuiltUpArea}
-		resp = append(resp, &bp)
+		resp.List [k] =  bp
+	}
+	resp.Num, err = sp.data.db.Debug().Shop.Query().Where(shop.And(shop.CommunityID(villageId))).Count(ctx)
+	if err !=nil {
+		return nil,err
 	}
 	return resp, err
-
 }
 
 func NewShopRepo(data *Data) *shopRepo {

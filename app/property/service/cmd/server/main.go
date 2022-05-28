@@ -6,6 +6,7 @@ import (
 	"github.com/yongliu1992/smartpms/api"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data"
+	"github.com/yongliu1992/smartpms/log"
 	"net/url"
 	"strconv"
 	"time"
@@ -24,7 +25,9 @@ func main() {
 	}
 	r.Start()
 	s.Plugins.Add(r)
-	s.RegisterName("property", new(Property), "")
+	appName := "property"
+	log.InitZap(appName)
+	s.RegisterName(appName, new(Property), "")
 	rp, _, err := data.InitData()
 	repo = rp
 	if err != nil {

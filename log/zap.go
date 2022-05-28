@@ -14,16 +14,12 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
-var log *zap.SugaredLogger
 
-func GetLog() *zap.SugaredLogger {
-	return log
-}
 func InitZap(appName string) {
 	core := zapcore.NewCore(getEncoder(), getLogW(appName), zapcore.DebugLevel)
 	logger := zap.New(core, zap.AddCaller())
 	defer logger.Sync()
-	log = logger.Sugar()
+	zap.ReplaceGlobals(logger)
 }
 
 func getLogW(appName string) zapcore.WriteSyncer {

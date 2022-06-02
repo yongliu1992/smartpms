@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/wire"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent"
 	"github.com/yongliu1992/smartpms/contrib/config/file"
 	"log"
@@ -14,12 +15,13 @@ type Data struct {
 	r  *redis.Client
 }
 
+var ProviderSet = wire.NewSet(NewEntClient, NewRedisClient, NewProvideData, NewShopRepo, NewCommunityRepo)
+
 func NewEntClient() *ent.Client {
 	c := file.GetConf()
 	m := c.Property.Mysql
 
-
-	mysqlAddress := m.User + ":"+m.Password+"@tcp(" + m.Host + ":" + m.Port + ")/" + m.DbName + "?parseTime=true"
+	mysqlAddress := m.User + ":" + m.Password + "@tcp(" + m.Host + ":" + m.Port + ")/" + m.DbName + "?parseTime=true"
 	client, err := ent.Open(
 		"mysql",
 		mysqlAddress,
@@ -36,7 +38,7 @@ func NewRedisClient() (*redis.Client, error) {
 	err := rc.Ping(context.Background()).Err()
 	return rc, err
 }
-func ProvideData(entClient *ent.Client, rc *redis.Client) *Data {
+func NewProvideData(entClient *ent.Client, rc *redis.Client) *Data {
 	d := &Data{db: entClient, r: rc}
 	return d
 }

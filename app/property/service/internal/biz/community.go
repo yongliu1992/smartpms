@@ -6,7 +6,16 @@ import (
 )
 
 type CommunityRepo interface {
-	Add(ctx context.Context, co Community) (Community,error)
+	Add(ctx context.Context, co Community) (Community, error)
+	List(ctx context.Context, co ListCommunityReq) (*[]Community, error)
+}
+type ListCommunityReq struct {
+	Community
+	PageReq
+}
+type PageReq struct {
+	Page     int `json:"page"`
+	PageSize int `json:"page_size"`
 }
 
 type Community struct {
@@ -40,9 +49,13 @@ type CommunityUseCase struct {
 }
 
 func (c *CommunityUseCase) Add(ctx context.Context, co Community) (Community, error) {
-	return c.repo.Add(ctx,co)
+	return c.repo.Add(ctx, co)
 }
 
-func NewCommunityUseCase(repo CommunityRepo)*CommunityUseCase  {
+func (c *CommunityUseCase) List(ctx context.Context, co ListCommunityReq) (*[]Community, error) {
+	return c.repo.List(ctx, co)
+}
+
+func NewCommunityUseCase(repo CommunityRepo) *CommunityUseCase {
 	return &CommunityUseCase{repo: repo}
 }

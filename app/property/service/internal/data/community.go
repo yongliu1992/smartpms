@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/biz"
+	"github.com/yongliu1992/smartpms/app/property/service/internal/data/ent/community"
 	"time"
 )
 
@@ -40,6 +41,23 @@ type communityRepo struct {
 	data *Data
 }
 
+func (c communityRepo) List(ctx context.Context, co biz.ListCommunityReq) (*[]biz.Community, error) {
+	if co.Page < 1 {
+		co.Page = 1
+	}
+	result, err := c.data.db.Community.Query().Where(community.AdminID(co.AdminID)).Offset((co.Page - 1) * co.PageSize).Limit(co.PageSize).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var res = make([]biz.Community, len(result))
+	for k, v := range result {
+		b := biz.Community{ID: v.ID, ProvinceID: v.ProvinceID, CityID: v.CityID, AreaID: v.AreaID, State: v.State, Number: v.CommNumber, AreaNum: v.AreaNum}
+		res[k] = b
+	}
+	return &res, err
+
+}
+
 func (c communityRepo) Add(ctx context.Context, co biz.Community) (biz.Community, error) {
 	result, err := c.data.db.Community.
 		Create().
@@ -57,6 +75,6 @@ func (c communityRepo) Add(ctx context.Context, co biz.Community) (biz.Community
 	return biz.Community{ID: result.ID}, err
 }
 
-func NewCommunityRepo(data *Data)*communityRepo  {
+func NewCommunityRepo(data *Data) *communityRepo {
 	return &communityRepo{data: data}
 }

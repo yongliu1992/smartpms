@@ -62,6 +62,21 @@ func (p *Property) Shops(ctx context.Context, req Param, resp *api.Resp) error {
 	resp.Message = "ok"
 	return nil
 }
+
+func (p *Property) ListComm(ctx context.Context, req Param, resp *api.Resp) error {
+	req2 := biz.ListCommunityReq{}
+	data, err := biz.NewCommunityUseCase(data.NewCommunityRepo(repo)).List(ctx, req2)
+	if err != nil {
+		resp.Code = 500
+		resp.Message = err.Error()
+		resp.Data = nil
+		return nil
+	}
+	resp.Data = data
+	resp.Code = 200
+	resp.Message = "ok"
+	return nil
+}
 func (p *Property) CreateCommunity(ctx context.Context, req Param, resp *api.Resp) error {
 
 	var reqData biz.Community

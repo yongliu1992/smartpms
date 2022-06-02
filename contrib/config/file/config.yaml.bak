@@ -1,0 +1,11 @@
+property:
+ mysql:
+   user: username
+   password: password
+   host: host
+   port: 3306
+   db_name: dbName
+ redis:
+   address: 127.0.0.1:6379
+   password:
+   db: 1

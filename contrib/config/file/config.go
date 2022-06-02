@@ -1,7 +1,6 @@
 package file
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"sync"
@@ -21,7 +20,6 @@ func GetConf() Configs {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(co.Property.Mysql.Host)
 		})
 	return co
 }

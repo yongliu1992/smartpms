@@ -75,6 +75,6 @@ func (c communityRepo) Add(ctx context.Context, co biz.Community) (biz.Community
 	return biz.Community{ID: result.ID}, err
 }
 
-func NewCommunityRepo(data *Data) *communityRepo {
+func NewCommunityRepo(data *Data) biz.CommunityRepo {
 	return &communityRepo{data: data}
 }

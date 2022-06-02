@@ -41,23 +41,23 @@ func (sp *shopRepo) ListShop(ctx context.Context, pageNum, pageSize, villageId i
 		pageNum = 1
 	}
 	data, err := sp.data.db.Debug().Shop.Query().Where(shop.And(shop.CommunityID(villageId))).Offset((pageNum - 1) * pageSize).Limit(pageNum).All(ctx)
-	if err !=nil {
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	resp = &biz.ListShopsResp{}
-	resp.List = make([]biz.Shop,len(data))
+	resp.List = make([]biz.Shop, len(data))
 	for k, v := range data {
-		bp := biz.Shop{ID: v.ID, FloorID: v.FloorID,CreatedAt: v.CreatedAt,BuiltUpArea: v.BuiltUpArea}
-		resp.List [k] =  bp
+		bp := biz.Shop{ID: v.ID, FloorID: v.FloorID, CreatedAt: v.CreatedAt, BuiltUpArea: v.BuiltUpArea}
+		resp.List[k] = bp
 	}
 	resp.Num, err = sp.data.db.Debug().Shop.Query().Where(shop.And(shop.CommunityID(villageId))).Count(ctx)
-	if err !=nil {
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	return resp, err
 }
 
-func NewShopRepo(data *Data) *shopRepo {
+func NewShopRepo(data *Data) biz.ShopsRepo {
 	return &shopRepo{
 		data: data,
 	}

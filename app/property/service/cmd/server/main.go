@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/smallnest/rpcx/server"
 	"github.com/yongliu1992/smartpms/app/property/service/internal/data"
-	"github.com/yongliu1992/smartpms/app/property/service/internal/service"
 	"github.com/yongliu1992/smartpms/log"
 	"time"
 )
@@ -23,9 +23,13 @@ func main() {
 	s.Plugins.Add(r)
 	appName := "property"
 	log.InitZap(appName)
-	s.RegisterName(appName, new(service.PropertyService), "")
+	sp, err := initApp()
+	if err != nil {
+		fmt.Println(err)
+	}
+	s.RegisterName(appName, sp, "")
 	//defer clean()
-	err := s.Serve("tcp", "127.0.0.1:8088")
+	err = s.Serve("tcp", "127.0.0.1:8088")
 	if err != nil {
 		panic(err)
 	}

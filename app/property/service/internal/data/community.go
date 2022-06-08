@@ -75,6 +75,24 @@ func (c communityRepo) Add(ctx context.Context, co biz.Community) (biz.Community
 	return biz.Community{ID: result.ID}, err
 }
 
+func (c communityRepo) Update(ctx context.Context, co *biz.Community) (bool, error) {
+	affectRows, err := c.data.db.Community.
+		Update().
+		Where(community.ID(co.ID)).
+		SetName(co.Name).
+		SetAdminID(co.AdminID).
+		SetCommNumber(co.Number).
+		SetAreaID(co.AreaID).
+		SetAreaNum(co.AreaNum).
+		SetCityID(co.CityID).
+		SetEndTime(co.EndTime).
+		SetStartTime(co.StartTime).
+		SetProvinceID(co.ProvinceID).
+		SetState(co.State).
+		Save(ctx)
+	return affectRows > 0, err
+}
+
 func NewCommunityRepo(data *Data) biz.CommunityRepo {
 	return &communityRepo{data: data}
 }

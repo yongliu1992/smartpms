@@ -36,3 +36,20 @@ func (p *PropertyService) CreateCommunity(ctx context.Context, req Param, resp *
 	resp.Message = "ok"
 	return nil
 }
+
+func (p *PropertyService) UpdateCommunity(ctx context.Context, req Param, resp *api.Resp) error {
+
+	var reqData biz.Community
+	reqData.Name = req.Post.Get("name")
+	_, err := p.common.Update(ctx, &reqData)
+	if err != nil {
+		resp.Code = 500
+		resp.Message = err.Error()
+		resp.Data = nil
+		return nil
+	}
+	resp.Data = ""
+	resp.Code = 200
+	resp.Message = "ok"
+	return nil
+}

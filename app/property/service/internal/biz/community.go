@@ -8,6 +8,7 @@ import (
 type CommunityRepo interface {
 	Add(ctx context.Context, co Community) (Community, error)
 	List(ctx context.Context, co ListCommunityReq) (*[]Community, error)
+	Update(ctx context.Context, co *Community) (bool, error)
 }
 type ListCommunityReq struct {
 	Community
@@ -54,6 +55,10 @@ func (c *CommunityUseCase) Add(ctx context.Context, co Community) (Community, er
 
 func (c *CommunityUseCase) List(ctx context.Context, co ListCommunityReq) (*[]Community, error) {
 	return c.repo.List(ctx, co)
+}
+
+func (c *CommunityUseCase) Update(ctx context.Context, co *Community) (bool, error) {
+	return c.repo.Update(ctx, co)
 }
 
 func NewCommunityUseCase(repo CommunityRepo) *CommunityUseCase {

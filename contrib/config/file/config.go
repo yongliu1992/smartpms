@@ -12,7 +12,7 @@ var synConf sync.Once
 func GetConf() Configs {
 	synConf.Do(
 		func() {
-			data, err := ioutil.ReadFile("/Users/liuyong/code/smartpms/contrib/config/file/config.yaml")
+			data, err := ioutil.ReadFile("/Users/kok/go/src/smartpms/contrib/config/file/config.yaml")
 			if err != nil {
 				panic(err)
 			}

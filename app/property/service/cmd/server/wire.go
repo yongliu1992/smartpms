@@ -3,6 +3,6 @@
 
 package main
 
-func initApp() (*service.PropertyService, error) {
-	panic(wire.Build(data.ProviderSet, biz.ProviderSet, service.ProviderSet))
-}
+//func initApp() (*service.PropertyService, error) {
+//	panic(wire.Build(data.ProviderSet, biz.ProviderSet, service.ProviderSet))
+//}
